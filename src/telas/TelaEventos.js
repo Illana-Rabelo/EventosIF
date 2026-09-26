@@ -38,14 +38,18 @@ function reducer(estado, acao) {
 }
 
 export default function TelaEventos({ navigation }) {
-  const { temaEscuro } = useContext(AppContexto);
+  // R6: Consumindo as inscrições e a função global do contexto
+  const {
+    temaEscuro,
+    inscricoes,
+    inscrever: inscreverGlobal,
+  } = useContext(AppContexto);
 
   // R4: Substituindo múltiplos useState pelo useReducer unificado
   const [state, dispatch] = useReducer(reducer, estadoInicial);
   const { eventos, carregando, erro, enviado } = state;
 
   const [busca, setBusca] = useState("");
-  const [inscricoes, setInscricoes] = useState([]);
   const [eventoSelecionadoId, setEventoSelecionadoId] = useState(null);
 
   // R5: AbortController para cancelar o fetch se o componente for desmontado

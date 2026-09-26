@@ -11,20 +11,16 @@ export function AppProvedor({ children }) {
   const [notificacoes, setNotificacoes] = useState([]);
   const [ultimaBusca, setUltimaBusca] = useState("");
 
-  return (
-    <AppContexto.Provider
-      value={{
-        usuario,
-        setUsuario,
-        temaEscuro,
-        setTemaEscuro,
-        notificacoes,
-        setNotificacoes,
-        ultimaBusca,
-        setUltimaBusca,
-      }}
-    >
-      {children}
-    </AppContexto.Provider>
-  );
+  // R6: Eleva o estado das inscrições para o contexto global
+  const [inscricoes, setInscricoes] = useState([]);
+
+  function inscrever(evento) {
+    const jaInscrito = inscricoes.some((i) => i.id === evento.id);
+    if (jaInscrito) {
+      return;
+    }
+    setInscricoes((inscricoesAtuais) => [...inscricoesAtuais, evento]);
+  }
+
+  return { children };
 }

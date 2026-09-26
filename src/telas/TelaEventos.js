@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import CartaoEvento from "../componentes/CartaoEvento";
 import { AppContexto } from "../contextos/AppContexto";
@@ -19,10 +19,7 @@ export default function TelaEventos({ navigation }) {
   const [enviado, setEnviado] = useState(false);
 
   const [busca, setBusca] = useState("");
-  const [eventosFiltrados, setEventosFiltrados] = useState([]);
-
   const [inscricoes, setInscricoes] = useState([]);
-  const [totalInscricoes, setTotalInscricoes] = useState(0);
   const [eventoSelecionado, setEventoSelecionado] = useState(null);
 
   useEffect(() => {
@@ -34,24 +31,19 @@ export default function TelaEventos({ navigation }) {
       })
       .catch((e) => {
         setErro(e.message);
+        setCarregando(false);
       });
   }, []);
 
-  useEffect(() => {
-    setEventosFiltrados(
-      eventos.filter((ev) =>
-        ev.titulo.toLowerCase().includes(busca.toLowerCase()),
-      ),
-    );
-  }, [busca, eventos]);
+  // R1: Cálculo direto na renderização (sem useState e sem useEffect órfãos)
+  const eventosFiltrados = eventos.filter((ev) =>
+    ev.titulo.toLowerCase().includes(busca.toLowerCase()),
+  );
 
-  useEffect(() => {
-    setTotalInscricoes(inscricoes.length);
-  }, [inscricoes]);
+  const totalInscricoes = inscricoes.length;
 
   function inscrever(evento) {
-    inscricoes.push(evento);
-    setInscricoes(inscricoes);
+    setInscricoes([...inscricoes, evento]);
     setEventoSelecionado(evento);
     setEnviado(true);
   }

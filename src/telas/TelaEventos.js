@@ -48,15 +48,25 @@ export default function TelaEventos({ navigation }) {
   const [inscricoes, setInscricoes] = useState([]);
   const [eventoSelecionadoId, setEventoSelecionadoId] = useState(null);
 
+  // R5: AbortController para cancelar o fetch se o componente for desmontado
   useEffect(() => {
-    fetch("https://api.campus.iftm.edu.br/eventos")
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    fetch("https://api.campus.iftm.edu.br/eventos", { signal })
       .then((resposta) => resposta.json())
       .then((dados) => {
         dispatch({ type: "SUCESSO_FETCH", payload: dados });
       })
       .catch((e) => {
-        dispatch({ type: "ERRO_FETCH", payload: e.message });
+        if (e.name !== "AbortError") {
+          dispatch({ type: "ERRO_FETCH", payload: e.message });
+        }
       });
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   // R1: Cálculo direto na renderização (sem useState e sem useEffect)

@@ -8,7 +8,8 @@ import {
   View,
 } from "react-native";
 import CartaoEvento from "../componentes/CartaoEvento";
-import { AppContexto } from "../contextos/AppContexto";
+// R7: importação alterada para incluir o InscricoesContexto
+import { AppContexto, InscricoesContexto } from "../contextos/AppContexto";
 
 // Estado inicial único para o useReducer
 const estadoInicial = {
@@ -39,11 +40,9 @@ function reducer(estado, acao) {
 
 export default function TelaEventos({ navigation }) {
   // R6: Consumindo as inscrições e a função global do contexto
-  const {
-    temaEscuro,
-    inscricoes,
-    inscrever: inscreverGlobal,
-  } = useContext(AppContexto);
+  const { temaEscuro } = useContext(AppContexto);
+  const { inscricoes, inscrever: inscreverGlobal } =
+    useContext(InscricoesContexto);
 
   // R4: Substituindo múltiplos useState pelo useReducer unificado
   const [state, dispatch] = useReducer(reducer, estadoInicial);

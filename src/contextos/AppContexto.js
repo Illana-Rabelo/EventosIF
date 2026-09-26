@@ -1,6 +1,8 @@
 import { createContext, useState } from "react";
 
 export const AppContexto = createContext();
+// R7: Criação de um contexto separado para isolar o domínio de inscrições
+export const InscricoesContexto = createContext();
 
 export function AppProvedor({ children }) {
   const [usuario, setUsuario] = useState({

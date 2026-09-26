@@ -42,8 +42,14 @@ export default function TelaEventos({ navigation }) {
 
   const totalInscricoes = inscricoes.length;
 
+  // R2: Função de inscrição corrigida (sem mutação direta e prevenindo duplicatas)
   function inscrever(evento) {
-    setInscricoes([...inscricoes, evento]);
+    const jaInscrito = inscricoes.some((i) => i.id === evento.id);
+    if (jaInscrito) {
+      return; // Regra de negócio: evita inscrição duplicada no mesmo evento
+    }
+
+    setInscricoes((inscricoesAtuais) => [...inscricoesAtuais, evento]);
     setEventoSelecionado(evento);
     setEnviado(true);
   }

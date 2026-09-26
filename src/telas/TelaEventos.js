@@ -20,7 +20,7 @@ export default function TelaEventos({ navigation }) {
 
   const [busca, setBusca] = useState("");
   const [inscricoes, setInscricoes] = useState([]);
-  const [eventoSelecionado, setEventoSelecionado] = useState(null);
+  const [eventoSelecionadoId, setEventoSelecionadoId] = useState(null);
 
   useEffect(() => {
     fetch("https://api.campus.iftm.edu.br/eventos")
@@ -50,9 +50,12 @@ export default function TelaEventos({ navigation }) {
     }
 
     setInscricoes((inscricoesAtuais) => [...inscricoesAtuais, evento]);
-    setEventoSelecionado(evento);
+    setEventoSelecionadoId(evento.id);
     setEnviado(true);
   }
+
+  // R3: Busca o evento selecionado diretamente da lista usando o ID
+  const eventoSelecionado = eventos.find((ev) => ev.id === eventoSelecionadoId);
 
   console.log("[render] TelaEventos");
 

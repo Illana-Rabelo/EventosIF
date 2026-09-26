@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useReducer } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -10,13 +10,39 @@ import {
 import CartaoEvento from "../componentes/CartaoEvento";
 import { AppContexto } from "../contextos/AppContexto";
 
+// Estado inicial único para o useReducer
+const estadoInicial = {
+  eventos: [],
+  carregando: true,
+  erro: null,
+  enviado: false,
+};
+
+// Função Reducer que centraliza as transições de estado
+function reducer(estado, acao) {
+  switch (acao.type) {
+    case "SUCESSO_FETCH":
+      return {
+        ...estado,
+        eventos: acao.payload,
+        carregando: false,
+        erro: null,
+      };
+    case "ERRO_FETCH":
+      return { ...estado, erro: acao.payload, carregando: false };
+    case "CONFIRMAR_ENVIO":
+      return { ...estado, enviado: true };
+    default:
+      return estado;
+  }
+}
+
 export default function TelaEventos({ navigation }) {
   const { temaEscuro } = useContext(AppContexto);
 
-  const [eventos, setEventos] = useState([]);
-  const [carregando, setCarregando] = useState(true);
-  const [erro, setErro] = useState(null);
-  const [enviado, setEnviado] = useState(false);
+  // R4: Substituindo múltiplos useState pelo useReducer unificado
+  const [state, dispatch] = useReducer(reducer, estadoInicial);
+  const { eventos, carregando, erro, enviado } = state;
 
   const [busca, setBusca] = useState("");
   const [inscricoes, setInscricoes] = useState([]);
@@ -26,16 +52,14 @@ export default function TelaEventos({ navigation }) {
     fetch("https://api.campus.iftm.edu.br/eventos")
       .then((resposta) => resposta.json())
       .then((dados) => {
-        setEventos(dados);
-        setCarregando(false);
+        dispatch({ type: "SUCESSO_FETCH", payload: dados });
       })
       .catch((e) => {
-        setErro(e.message);
-        setCarregando(false);
+        dispatch({ type: "ERRO_FETCH", payload: e.message });
       });
   }, []);
 
-  // R1: Cálculo direto na renderização (sem useState e sem useEffect órfãos)
+  // R1: Cálculo direto na renderização (sem useState e sem useEffect)
   const eventosFiltrados = eventos.filter((ev) =>
     ev.titulo.toLowerCase().includes(busca.toLowerCase()),
   );
@@ -51,7 +75,7 @@ export default function TelaEventos({ navigation }) {
 
     setInscricoes((inscricoesAtuais) => [...inscricoesAtuais, evento]);
     setEventoSelecionadoId(evento.id);
-    setEnviado(true);
+    dispatch({ type: "CONFIRMAR_ENVIO" });
   }
 
   // R3: Busca o evento selecionado diretamente da lista usando o ID
